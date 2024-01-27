@@ -7,10 +7,8 @@ var service = new ServiceCollection();
 service.AddDbContext<MenuDbContext>(
 	options => options.UseSqlServer(connectionString));
 service.AddScoped<IApp, App>();
-service.AddScoped<ICreatingToDatabase, CreatingToDatabase>();
-service.AddScoped<IReadingFromDatabase, ReadingFromDatabase>();
-service.AddScoped<IUpdatingDatabase, UpdatingDatabse>();
-service.AddScoped<IDeletingFromDatabase, DeletingFromDatabase>();
+service.AddScoped<IUserInterface, UserInterface>();
+service.AddScoped<IEventHandlerInterface, EventHandlerClass>();
 service.AddScoped<IRepository<Meal>, MenuSqlRepository<Meal>>();
 service.AddScoped<IRepository<Drink>, MenuSqlRepository<Drink>>();
 
