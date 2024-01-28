@@ -7,13 +7,16 @@ internal class UserInterface : IUserInterface
 {
 	private readonly IRepository<Meal> _mealRepository;
 	private readonly IRepository<Drink> _drinkRepository;
+	private readonly ISaveToXmlAndCsv _saveToXmlAndCsv;
 
     public UserInterface(
 		IRepository<Meal> mealRepository,
-		IRepository<Drink> drinkRepository)
+		IRepository<Drink> drinkRepository,
+		ISaveToXmlAndCsv saveToXmlAndCsv)
     {
 		_mealRepository = mealRepository;
 		_drinkRepository = drinkRepository;
+		_saveToXmlAndCsv = saveToXmlAndCsv;
 	}
     public void Run()
 	{
@@ -64,8 +67,8 @@ internal class UserInterface : IUserInterface
 				break;
 			case "exit":
 				Console.WriteLine("Thank you for trying Soylent Green Cafe where our Customers are our specialty!");
-				SaveToXMLFile();
-				SaveToCSVFile();
+				_saveToXmlAndCsv.SaveToXMLFile();
+				_saveToXmlAndCsv.SaveToCSVFile();
 				isWroking = false;
 				break;
 			default:
@@ -754,39 +757,6 @@ internal class UserInterface : IUserInterface
 	}
 
 	private string UserStringInputMethod() => Console.ReadLine().ToLower();
-
-	// Saving to File --------------------------------------------------------------------------------
-
-	void SaveToXMLFile()
-	{
-		var xMLDocument = new XDocument();
-		var xMLMenu = new XElement("Menu", 
-			_drinkRepository.GetAll().Select(x =>
-			new XElement("Drinks",
-				new XAttribute("Name", x.ItemName),
-				new XAttribute("Price", x.ItemPrice),
-				new XAttribute("Ingrediants", String.Join(",", x.Ingredients)))),
-			_mealRepository.GetAll().Select(y =>
-			new XElement("Meals",
-				new XAttribute("Name", y.ItemName),
-				new XAttribute("Price", y.ItemPrice),
-				new XAttribute("Ingrediants", String.Join(",", y.Ingredients))))
-			);
-
-		xMLDocument.Add(xMLMenu);
-		xMLDocument.Save("XML_Menu.xml");
-
-	}
-	void SaveToCSVFile()
-	{
-		List<CafeMenu> csvMenu = [.. _drinkRepository.GetAll(), .. _mealRepository.GetAll()];
-
-		using (var writer = new StreamWriter(@"Menu.csv"))
-
-		using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-		{
-			csv.WriteRecords(csvMenu);
-		}
-	}
+	
 }
 

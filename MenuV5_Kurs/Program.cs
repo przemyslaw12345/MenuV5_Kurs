@@ -11,6 +11,8 @@ service.AddScoped<IUserInterface, UserInterface>();
 service.AddScoped<IEventHandlerInterface, EventHandlerClass>();
 service.AddScoped<IRepository<Meal>, MenuSqlRepository<Meal>>();
 service.AddScoped<IRepository<Drink>, MenuSqlRepository<Drink>>();
+service.AddScoped<ISaveToXmlAndCsv, SaveToXmlAndCsv>();
+
 
 var serviceProvider = service.BuildServiceProvider();
 var app = serviceProvider.GetRequiredService<IApp>();
