@@ -1,16 +1,17 @@
 ﻿
+using System.Reflection.Metadata;
+using System.Xml.Linq;
+using System.Xml.XPath;
+
 internal class UserInterface : IUserInterface
 {
-	private readonly MenuDbContext _menuDbContext;
 	private readonly IRepository<Meal> _mealRepository;
 	private readonly IRepository<Drink> _drinkRepository;
 
     public UserInterface(
-		MenuDbContext menuDbContext,
 		IRepository<Meal> mealRepository,
 		IRepository<Drink> drinkRepository)
     {
-		_menuDbContext = menuDbContext;
 		_mealRepository = mealRepository;
 		_drinkRepository = drinkRepository;
 	}
@@ -63,7 +64,8 @@ internal class UserInterface : IUserInterface
 				break;
 			case "exit":
 				Console.WriteLine("Thank you for trying Soylent Green Cafe where our Customers are our specialty!");
-				//SaveToXMLFile();
+				SaveToXMLFile();
+				SaveToCSVFile();
 				isWroking = false;
 				break;
 			default:
@@ -752,5 +754,32 @@ internal class UserInterface : IUserInterface
 	}
 
 	private string UserStringInputMethod() => Console.ReadLine().ToLower();
+
+	// Saving to File --------------------------------------------------------------------------------
+
+	void SaveToXMLFile()
+	{
+		var xMLDocument = new XDocument();
+		var xMLMenu = new XElement("Menu", 
+			_drinkRepository.GetAll().Select(x =>
+			new XElement("Drinks",
+				new XAttribute("Name", x.ItemName),
+				new XAttribute("Price", x.ItemPrice),
+				new XAttribute("Ingrediants", String.Join(",", x.Ingredients)))),
+			_mealRepository.GetAll().Select(y =>
+			new XElement("Meals",
+				new XAttribute("Name", y.ItemName),
+				new XAttribute("Price", y.ItemPrice),
+				new XAttribute("Ingrediants", String.Join(",", y.Ingredients))))
+			);
+
+		xMLDocument.Add(xMLMenu);
+		xMLDocument.Save("XML_Menu.xml");
+
+	}
+	void SaveToCSVFile()
+	{
+
+	}
 }
 
