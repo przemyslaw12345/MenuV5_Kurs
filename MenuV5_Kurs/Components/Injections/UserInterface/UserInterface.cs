@@ -2,6 +2,9 @@
 using System.Reflection.Metadata;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using CsvHelper;
+using System.Globalization;
+using System.IO;
 
 internal class UserInterface : IUserInterface
 {
@@ -779,7 +782,14 @@ internal class UserInterface : IUserInterface
 	}
 	void SaveToCSVFile()
 	{
+		List<CafeMenu> csvMenu = [.. _drinkRepository.GetAll(), .. _mealRepository.GetAll()];
 
+		using (var writer = new StreamWriter(@"Menu.csv"))
+
+		using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+		{
+			csv.WriteRecords(csvMenu);
+		}
 	}
 }
 
