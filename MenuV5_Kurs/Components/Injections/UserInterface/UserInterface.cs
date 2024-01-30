@@ -24,14 +24,14 @@ internal class UserInterface : IUserInterface
 		while (isWroking)
 		{
 			Console.Clear();
-			MainMenuMessage();
+			MainMenuUIMessage();
 			string optionSelected = UserStringInputMethod();
 			isWroking = SelectingUserChoiceMethod(isWroking, optionSelected);
 			Console.ReadKey();
 		}
 	}
 	// Methods for main menu -------------------------------------------------------------------------
-	private void MainMenuMessage()
+	private void MainMenuUIMessage()
 	{
 		Console.WriteLine(
 			$"Welcome to Soylent Green Cafe where our Customer is our specialty!! {Environment.NewLine}" +
@@ -54,16 +54,16 @@ internal class UserInterface : IUserInterface
 		switch (optionSelected)
 		{
 			case "view":
-				ViewingDbLoop();
+				ViewingDatabaseLoop();
 				break;
 			case "add":
 				AddingToDbLoop();
 				break;
 			case "remove":
-				DeletingFromDbLoop();
+				DeletingFromDatabaseLoop();
 				break;
 			case "update":
-				UpdatingItemsInDbMenuLoop();
+				UpdatingItemsInDatabaseMenuLoop();
 				break;
 			case "exit":
 				Console.WriteLine("Thank you for trying Soylent Green Cafe where our Customers are our specialty!");
@@ -74,7 +74,6 @@ internal class UserInterface : IUserInterface
 			default:
 				Console.WriteLine("Incorrect input, please try again.");
 				break;
-
 		}
 		return isWroking;
 	}
@@ -86,14 +85,14 @@ internal class UserInterface : IUserInterface
 		bool isWorking = true;
 		while (isWorking)
 		{
-			AddingToDbMenuMessage();
+			AddingToDatabaseUIMessage();
 			string optionSelected = UserStringInputMethod();
-			UsingUserInputToAddToCorrectDb(optionSelected);
+			UsingUserInputToAddToCorrectDatabase(optionSelected);
 			isWorking = CheckIfUserWantsToContinue(isWorking);
 		}
 	}
 
-	private void AddingToDbMenuMessage()
+	private void AddingToDatabaseUIMessage()
 	{
 		Console.Clear();
 		Console.WriteLine(
@@ -104,7 +103,7 @@ internal class UserInterface : IUserInterface
 			);
 	}
 
-	private void UsingUserInputToAddToCorrectDb(string optionSelected)
+	private void UsingUserInputToAddToCorrectDatabase(string optionSelected)
 	{
 		bool isWorkingSubLoop = true;
 		while (isWorkingSubLoop)
@@ -112,11 +111,11 @@ internal class UserInterface : IUserInterface
 			switch (optionSelected)
 			{
 				case "drink":
-					AddingToDbMethod(optionSelected);
+					AddingToDatabaseMethod(optionSelected);
 					isWorkingSubLoop = false;
 					break;
 				case "meal":
-					AddingToDbMethod(optionSelected);
+					AddingToDatabaseMethod(optionSelected);
 					isWorkingSubLoop = false;
 					break;
 				case "nothing":
@@ -125,31 +124,24 @@ internal class UserInterface : IUserInterface
 					break;
                 default:
 					Console.WriteLine("You entered an invalid option, please try again");
-					AddingToDbMenuMessage();
+					AddingToDatabaseUIMessage();
 					optionSelected = UserStringInputMethod();
 					isWorkingSubLoop = true;
 					break;
 			}
 		}
-		//return isWorking;
 	}
 
-	private void AddingToDbMethod(string optionToAddSelected)
+	private void AddingToDatabaseMethod(string optionSelected)
 	{
-		Drink? newDrinkToAdd;
-
-		Meal? newMealToAdd;
-
 		string nameOfItem = GetNameMethod();
-
 		float priceOfItem = GetFloatMethod();
-
 		List<string> ingredientsList = GetIngrediantList();
 
-		switch (optionToAddSelected)
+		switch (optionSelected)
 		{
 			case "drink":
-				newDrinkToAdd = new Drink
+				Drink newDrinkToAdd = new Drink
 				{
 					ItemName = nameOfItem,
 					ItemPrice = priceOfItem,
@@ -159,7 +151,7 @@ internal class UserInterface : IUserInterface
 				_drinkRepository.Save();
 				break;
 			case "meal":
-				newMealToAdd = new Meal
+				Meal newMealToAdd = new Meal
 				{
 					ItemName = nameOfItem,
 					ItemPrice = priceOfItem,
@@ -179,7 +171,7 @@ internal class UserInterface : IUserInterface
 		switch (optionSelected)
 		{
 			case "yes":
-				ingredientsTempList = FillingListWithIngrediants(ingredientsTempList);
+				ingredientsTempList = AddingIngrediantsToList(ingredientsTempList);
 				break;
 			case "no":
 				ingredientsTempList = new List<string>();
@@ -190,19 +182,19 @@ internal class UserInterface : IUserInterface
 		
 	// Methods for Viewing Items ---------------------------------------------------------------------
 
-	public void ViewingDbLoop()
+	public void ViewingDatabaseLoop()
 	{
 		bool isWorking = true;
 		string optionSelected;
 		while (isWorking)
 		{
-			ViewingDbMenuMessage();
+			ViewingDatabaseUIMessage();
 			optionSelected = UserStringInputMethod();
 			isWorking = UsingUserInputToOrderOrExitMenu(optionSelected, isWorking);
 		}
 	}
 
-	private void ViewingDbMenuMessage()
+	private void ViewingDatabaseUIMessage()
 	{
 		Console.Clear();
 		Console.WriteLine(
@@ -211,32 +203,12 @@ internal class UserInterface : IUserInterface
 			$"Else to return to main menu please type [Exit] {Environment.NewLine}"
 			);
 		Console.WriteLine("Drink Menu");
-		ViewMenu(_drinkRepository);
+		WriteMenuToConsole(_drinkRepository.GetAll());
 
 		Console.WriteLine("------------------------------------------------------------------------");
 
 		Console.WriteLine("Meal Menu");
-		ViewMenu(_mealRepository);
-
-	}
-
-	public void ViewMenu<T>(IRepository<T> _itemRepository)
-		where T : class, ICafeMenu
-	{
-		foreach (var item in _itemRepository.GetAll())
-		{
-
-			if (item.Ingredients == null)
-			{
-				Console.WriteLine($"{item.Id}. {item.ItemName} ----- {item.ItemPrice}USD");
-			}
-			else
-			{
-				Console.WriteLine($"{item.Id}. {item.ItemName} ----- {item.ItemPrice}USD {Environment.NewLine}" +
-				$"{String.Join(", ", item.Ingredients)}");
-			}
-		}
-
+		WriteMenuToConsole(_mealRepository.GetAll());
 	}
 
 	private bool UsingUserInputToOrderOrExitMenu(string optionSelected, bool isWorking)
@@ -264,13 +236,13 @@ internal class UserInterface : IUserInterface
 		string optionSelected;
 		while (isWorking)
 		{
-			OrderCafeMenuMessage();
+			OrderCafeUIMessage();
 			optionSelected = UserStringInputMethod();
 			isWorking = UsingUserInputToSelectHowToOrderMenu(optionSelected, isWorking);
 		}
 	}
 
-	private void OrderCafeMenuMessage()
+	private void OrderCafeUIMessage()
 	{
 		Console.Clear();
 		Console.WriteLine(
@@ -290,11 +262,11 @@ internal class UserInterface : IUserInterface
 		switch (optionSelected)
 		{
 			case "1":
-				ViewMenu(_drinkRepository);
+				WriteMenuToConsole(_drinkRepository.GetAll());
 				Console.ReadLine();
 				break;
 			case "2":
-				ViewMenu(_mealRepository);
+				WriteMenuToConsole(_mealRepository.GetAll());
 				Console.ReadLine();
 				break;
 			case "3":
@@ -320,25 +292,8 @@ internal class UserInterface : IUserInterface
 	{
 		IEnumerable<CafeMenu>? menu = GetOrderedMenu(optionSelected);
 		Console.Clear();
-
-		WriteOutOrderedMenu(menu);
+		WriteMenuToConsole(menu);
 		Console.ReadLine();
-	}
-
-	private static void WriteOutOrderedMenu(IEnumerable<CafeMenu>? menu)
-	{
-		foreach (var item in menu)
-		{
-			if (item.Ingredients == null)
-			{
-				Console.WriteLine($"{item.Id}. {item.ItemName} ----- {item.ItemPrice}USD");
-			}
-			else
-			{
-				Console.WriteLine($"{item.Id}. {item.ItemName} ----- {item.ItemPrice}USD {Environment.NewLine}" +
-				$"{String.Join(", ", item.Ingredients)}");
-			}
-		}
 	}
 
 	private IEnumerable<CafeMenu>? GetOrderedMenu(string optionSelected)
@@ -355,7 +310,6 @@ internal class UserInterface : IUserInterface
 			case "5":
 				List<CafeMenu> cafeMenu = [.. _drinkRepository.GetAll(), .. _mealRepository.GetAll()];
 				menu = cafeMenu.OrderBy(x => x.ItemPrice);
-				//menu = _menuDbContext.Meals.;
 				break;
 		}
 		return menu;
@@ -363,19 +317,19 @@ internal class UserInterface : IUserInterface
 
 	// Methods for Deleting Items --------------------------------------------------------------------
 
-	public void DeletingFromDbLoop()
+	public void DeletingFromDatabaseLoop()
 	{
 		bool isWorking = true;
 		while (isWorking)
 		{
-			DeletingFromDbMenuMessage();
+			DeletingFromDatabaseUIMessage();
 			string optionSelected = UserStringInputMethod();
 			UsingUserInputToDeleteSelectedItem(optionSelected);
 			isWorking = CheckIfUserWantsToContinue(isWorking);
 		}
 	}
 
-	private void DeletingFromDbMenuMessage()
+	private void DeletingFromDatabaseUIMessage()
 	{
 		Console.Clear();
 		Console.WriteLine(
@@ -397,12 +351,12 @@ internal class UserInterface : IUserInterface
 			{
 				case "drink":
 					cafeMenu = RetrieveOptionForDeletion(optionSelected);
-					DeleteFromDb(optionSelected, cafeMenu);
+					VerifyingToPreceedWithOptionDeletion(optionSelected, cafeMenu);
 					isWorkingSubLoop = false;
 					break;
 				case "meal":
 					cafeMenu = RetrieveOptionForDeletion(optionSelected);
-					DeleteFromDb(optionSelected, cafeMenu);
+					VerifyingToPreceedWithOptionDeletion(optionSelected, cafeMenu);
 					isWorkingSubLoop = false;
 					break;
 				case "nothing":
@@ -411,15 +365,12 @@ internal class UserInterface : IUserInterface
 					break;
 				default:
 					Console.WriteLine("You entered an invalid option, please try again");
-					DeletingFromDbMenuMessage();
+					DeletingFromDatabaseUIMessage();
 					optionSelected = UserStringInputMethod();
 					isWorkingSubLoop = true;
-					Console.ReadKey();
 					break;
 			}
-			
 		}
-		
 	}
 
 	private CafeMenu RetrieveOptionForDeletion(string optionToRemoveSelected)
@@ -429,12 +380,12 @@ internal class UserInterface : IUserInterface
 		switch (optionToRemoveSelected)
 		{
 			case "drink":
-				ViewMenu(_drinkRepository);
+				WriteMenuToConsole(_drinkRepository.GetAll());
 				itemNumber = GetIntMethod();
 				cafeMenu = _drinkRepository.GetSpecific(itemNumber);	
 				break;
 			case "meal":
-				ViewMenu(_mealRepository);
+				WriteMenuToConsole(_mealRepository.GetAll());
 				itemNumber = GetIntMethod();
 				cafeMenu = _mealRepository.GetSpecific(itemNumber);
 				break;
@@ -442,7 +393,7 @@ internal class UserInterface : IUserInterface
 		return cafeMenu;
 	}
 
-	private void DeleteFromDb(string optionToRemoveSelected, CafeMenu cafeMenu)
+	private void VerifyingToPreceedWithOptionDeletion(string optionToRemoveSelected, CafeMenu cafeMenu)
 
 	{
 		bool isWorking = true;
@@ -450,22 +401,12 @@ internal class UserInterface : IUserInterface
 		
 		while (isWorking)
 		{
-			VerificationOfItemRemovalMethod(cafeMenu);
+			PrintOptionToConsoleForVerificationOfDeletion(cafeMenu);
 			string optionSelected = UserStringInputMethod();
 			switch (optionSelected)
 			{
 				case "yes":
-					switch (optionToRemoveSelected)
-					{
-						case "drink":
-							_drinkRepository.RemoveItem(_drinkRepository.GetSpecific(itemNumber));
-							_drinkRepository.Save();
-							break;
-						case "meal":
-							_mealRepository.RemoveItem(_mealRepository.GetSpecific(itemNumber));
-							_mealRepository.Save();
-							break;
-					}
+					DeletingOptionFromDatabase(optionToRemoveSelected, itemNumber);
 					isWorking = false;
 					break;
 				case "no":
@@ -477,41 +418,54 @@ internal class UserInterface : IUserInterface
 					break;
 			}
 		}
-		
 	}
 
-	public void VerificationOfItemRemovalMethod(CafeMenu cafeMenu)
+	private void DeletingOptionFromDatabase(string optionToRemoveSelected, int itemNumber)
+	{
+		switch (optionToRemoveSelected)
+		{
+			case "drink":
+				_drinkRepository.RemoveItem(_drinkRepository.GetSpecific(itemNumber));
+				_drinkRepository.Save();
+				break;
+			case "meal":
+				_mealRepository.RemoveItem(_mealRepository.GetSpecific(itemNumber));
+				_mealRepository.Save();
+				break;
+		}
+	}
+
+	public void PrintOptionToConsoleForVerificationOfDeletion(CafeMenu cafeMenu)
 	{
 		Console.Clear();
-		if (cafeMenu.Ingredients == null)
-		{
-			Console.WriteLine($"Are you sure you wish to delete: {Environment.NewLine}" +
-			$"{cafeMenu.Id}. {cafeMenu.ItemName} ----- {cafeMenu.ItemPrice}USD {Environment.NewLine}");
-		}
-		else
-		{
-			Console.WriteLine($"Are you sure you wish to delete: {Environment.NewLine}" +
-			$"{cafeMenu.Id}. {cafeMenu.ItemName} ----- {cafeMenu.ItemPrice}USD {Environment.NewLine}" +
-			$"{String.Join(", ", cafeMenu.Ingredients)} {Environment.NewLine}");
-		}
+
+		string textIngrediantFull = $"{cafeMenu.Id}. {cafeMenu.ItemName} ----- {cafeMenu.ItemPrice}USD {Environment.NewLine}" +
+				$"{String.Join(", ", cafeMenu.Ingredients)}";
+
+		string textIngrediantNull = $"{cafeMenu.Id}. {cafeMenu.ItemName} ----- {cafeMenu.ItemPrice}USD";
+
+		//ternary syntax
+		string textToConsole = (cafeMenu.Ingredients != null) ? textIngrediantFull : textIngrediantNull;
+
+		Console.WriteLine($"Are you sure you wish to delete: {Environment.NewLine}" + textToConsole);
 		Console.WriteLine("[Yes/No]");
 	}
 
 	// Methods for Updating Items --------------------------------------------------------------------
 
-	public void UpdatingItemsInDbMenuLoop()
+	public void UpdatingItemsInDatabaseMenuLoop()
 	{
 		bool isWorking = true;
 		while (isWorking)
 		{
-			UpdatingDbMenuMessage();
+			UpdatingDatabaseUIMessage();
 			string optionSelected = UserStringInputMethod();
 			SelectingWhatToUpdateInTheMenuMethod(optionSelected);
 			isWorking = CheckIfUserWantsToContinue(isWorking);
 		}
 	}
 
-	private void UpdatingDbMenuMessage()
+	private void UpdatingDatabaseUIMessage()
 	{
 		Console.Clear();
 		Console.WriteLine(
@@ -534,7 +488,7 @@ internal class UserInterface : IUserInterface
 			switch (optionSelected)
 			{
 				case "drink":
-					ViewMenu(_drinkRepository);
+					WriteMenuToConsole(_drinkRepository.GetAll());
 					itemNumber = GetIntMethod();
 					cafeMenu = SelectingWhatToUpdateInItemLoop(_drinkRepository.GetSpecific(itemNumber));
 					_drinkRepository.Edit((Drink)cafeMenu);
@@ -542,7 +496,7 @@ internal class UserInterface : IUserInterface
 					_drinkRepository.Save();
 					break;
 				case "meal":
-					ViewMenu(_mealRepository);
+					WriteMenuToConsole(_mealRepository.GetAll());
 					itemNumber = GetIntMethod();
 					cafeMenu = SelectingWhatToUpdateInItemLoop(_mealRepository.GetSpecific(itemNumber));
 					_mealRepository.Edit((Meal)cafeMenu);
@@ -554,7 +508,7 @@ internal class UserInterface : IUserInterface
 					break;
 				default:
 					Console.WriteLine("You entered an invalid option, please try again");
-					UpdatingDbMenuMessage();
+					UpdatingDatabaseUIMessage();
 					optionSelected = UserStringInputMethod();
 					isWorkingSubLoop = true;
 					Console.ReadKey();
@@ -569,20 +523,21 @@ internal class UserInterface : IUserInterface
 		while (isWorking)
 		{
 			Console.Clear();
-			ItemProperetiesAvailableToUpdateMessage();
+
+			ItemProperetiesAvailableToUpdateUIMessage();
+
 			string optionSelcted = UserStringInputMethod();
+
 			cafeMenu = SelectingWhatToUpdateInTheMenuMethod(optionSelcted, cafeMenu);
-			if (optionSelcted == "exit")
-			{
-				isWorking = false;
-			}
+
+			isWorking = (optionSelcted == "exit") ? false : true;
 		}
 
 		return cafeMenu;
 
 	}
 
-	private static void ItemProperetiesAvailableToUpdateMessage()
+	private static void ItemProperetiesAvailableToUpdateUIMessage()
 	{
 		Console.WriteLine(
 						$"What would you like to update? {Environment.NewLine}" +
@@ -612,7 +567,7 @@ internal class UserInterface : IUserInterface
 					$"{String.Join(",", cafeMenu.Ingredients)}");
 				break;
 			case "add":
-				cafeMenu.Ingredients = FillingListWithIngrediants(cafeMenu.Ingredients);
+				cafeMenu.Ingredients = AddingIngrediantsToList(cafeMenu.Ingredients);
 				Console.WriteLine($"New ingrediants have been added to the list: {Environment.NewLine}" +
 					$"{String.Join(",", cafeMenu.Ingredients)}");
 				break;
@@ -641,6 +596,7 @@ internal class UserInterface : IUserInterface
 
 			Console.WriteLine("What is the name of the updated ingrediant?");
 			string newIngrediantName = UserStringInputMethod();
+
 			cafeMenu.Ingredients[userSelection - 1] = newIngrediantName;
 			isWorking = CheckIfUserWantsToContinue(isWorking);
 		}
@@ -658,17 +614,17 @@ internal class UserInterface : IUserInterface
 
 	private float GetFloatMethod()
 	{
-		bool isWorkingSubLoop = true;
+		bool isWorking = true;
 		float price = 0;
-		while (isWorkingSubLoop)
+		while (isWorking)
 		{
 
 			Console.WriteLine($"What is the items price? {Environment.NewLine}");
 
 			if (float.TryParse(UserStringInputMethod(), out price))
 			{
+				isWorking = false;
 				return price;
-				isWorkingSubLoop = false;
 			}
 			else
 			{
@@ -680,16 +636,16 @@ internal class UserInterface : IUserInterface
 
 	private int GetIntMethod()
 	{
-		bool isWorkingSubLoop = true;
+		bool isWorking = true;
 		int itemNumber = 0;
-		while (isWorkingSubLoop)
+		while (isWorking)
 		{
 			Console.WriteLine("Input option number");
 
 			if (int.TryParse(UserStringInputMethod(), out itemNumber))
 			{
+				isWorking = false;
 				return itemNumber;
-				isWorkingSubLoop = false;
 			}
 			else
 			{
@@ -725,7 +681,7 @@ internal class UserInterface : IUserInterface
 		return isWorking;
 	}
 
-	private List<string> FillingListWithIngrediants(List<string> ingredientsTempList)
+	private List<string> AddingIngrediantsToList(List<string> ingredientsTempList)
 	{
 		string ingrediant;
 		string optionSelected;
@@ -756,7 +712,22 @@ internal class UserInterface : IUserInterface
 		return ingredientsTempList;
 	}
 
+	private static void WriteMenuToConsole<T>(IEnumerable<T>? menu)
+		where T : class, ICafeMenu
+	{
+		foreach (var item in menu)
+		{
+			string textIngrediantFull = $"{item.Id}. {item.ItemName} ----- {item.ItemPrice}USD {Environment.NewLine}" +
+				$"{String.Join(", ", item.Ingredients)}";
+
+			string textIngrediantNull = $"{item.Id}. {item.ItemName} ----- {item.ItemPrice}USD";
+
+			string textToConsole = (item.Ingredients != null) ? textIngrediantFull : textIngrediantNull;
+
+			Console.WriteLine(textToConsole);
+		}
+	}
+
 	private string UserStringInputMethod() => Console.ReadLine().ToLower();
-	
 }
 

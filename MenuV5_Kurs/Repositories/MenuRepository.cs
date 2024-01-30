@@ -23,7 +23,10 @@ internal class MenuSqlRepository<T> :
 
 	public void Edit(T item)
 	{
-		_dbSet.Update(item);
+		if (item != null)
+		{
+			_dbSet.Update(item);
+		}
 	}
 
 	public IEnumerable<T> GetAll()
